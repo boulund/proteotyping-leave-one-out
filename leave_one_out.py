@@ -118,13 +118,18 @@ def run_workflow(strain):
 
     print workername+": Running proteotyping without blacklisting on", mappings
     resultsfile = "./results/"+os.path.basename(mappings)+".results"
-    proteotyping_call = "proteotyping.py --accno_annotation_pickle accno_annotation.pkl --taxtree_pickle taxtree.pkl --gene_info /shared/db/NCBI/gene/gene_info --output {output} {input}"
-    call(proteotyping_call.format(input=mappings, output=resultsfile), shell=True)
+    proteotyping_call = "proteotyping.py --accno_annotation_pickle accno_annotation.pkl --taxtree_pickle taxtree.pkl --gene_info /shared/db/NCBI/gene/gene_info --logfile {logfile} --output {output} {input}"
+    call(proteotyping_call.format(input=mappings, 
+                                  output=resultsfile, 
+                                  logfile=strain+".log"), shell=True)
 
     print workername+": Running proteotyping WITH blacklisting on", mappings
     resultsfile = "./results/"+os.path.basename(mappings)+".blacklist.results"
-    proteotyping_call = "proteotyping.py --accno_annotation_pickle accno_annotation.pkl --taxtree_pickle taxtree.pkl --gene_info /shared/db/NCBI/gene/gene_info --leave-out {blacklist} --output {output} {input}"
-    call(proteotyping_call.format(input=mappings, output=resultsfile, blacklist=",".join(accnos[strain])), shell=True)
+    proteotyping_call = "proteotyping.py --accno_annotation_pickle accno_annotation.pkl --taxtree_pickle taxtree.pkl --gene_info /shared/db/NCBI/gene/gene_info --leave-out {blacklist} --logfile {logfile} --output {output} {input}"
+    call(proteotyping_call.format(input=mappings, 
+                                  output=resultsfile, 
+                                  logfile=strain+"blacklisted.log",
+                                  blacklist=",".join(accnos[strain])), shell=True)
 
 
 
