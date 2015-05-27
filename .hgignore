@@ -1,0 +1,8 @@
+syntax: glob
+concat_proteomes
+proteomes
+results
+*.pyc
+*.pkl
+*.log
+
