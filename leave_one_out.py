@@ -104,7 +104,7 @@ def run_workflow(strain):
     num_fragments = 10000
     print workername+": Sampling", num_fragments, "fragments from", fastafile
     sample_fasta(fastafile, 
-            num_samples, 
+            num_fragments, 
             replacement=False, 
             outfile=sampled_fasta, 
             minlength=6, 
@@ -118,14 +118,14 @@ def run_workflow(strain):
 
     print workername+": Running proteotyping without blacklisting on", mappings
     resultsfile = "./results/"+os.path.basename(mappings)+".results"
-    proteotyping_call = "proteotyping.py --accno_annotation_pickle accno_annotation.pkl --taxtree_pickle taxtree.pkl --gene_info /shared/db/NCBI/gene/gene_info --logfile {logfile} --output {output} {input}"
+    proteotyping_call = "proteotyping.py --accno_annotation_pickle accno_annotation.pkl --taxtree_pickle taxtree.pkl --gene_info /shared/db/NCBI/gene/gene_info --blacklist_accnos blacklist.txt --logfile {logfile} --output {output} {input}"
     call(proteotyping_call.format(input=mappings, 
                                   output=resultsfile, 
                                   logfile=strain+".log"), shell=True)
 
     print workername+": Running proteotyping WITH blacklisting on", mappings
     resultsfile = "./results/"+os.path.basename(mappings)+".blacklist.results"
-    proteotyping_call = "proteotyping.py --accno_annotation_pickle accno_annotation.pkl --taxtree_pickle taxtree.pkl --gene_info /shared/db/NCBI/gene/gene_info --leave-out {blacklist} --logfile {logfile} --output {output} {input}"
+    proteotyping_call = "proteotyping.py --accno_annotation_pickle accno_annotation.pkl --taxtree_pickle taxtree.pkl --gene_info /shared/db/NCBI/gene/gene_info --leave-out {blacklist} --blacklist_accnos blacklist.txt --logfile {logfile} --output {output} {input}"
     call(proteotyping_call.format(input=mappings, 
                                   output=resultsfile, 
                                   logfile=strain+"blacklisted.log",
@@ -143,7 +143,8 @@ if __name__ == "__main__":
     print "Loaded paths to", len(paths), "proteomes and", len(accnos), "genomes from disk."
 
     print "Starting worker pool with 6 processess..."
-    pool = Pool(processes=6)
-    strains = choice(paths.keys(), size=12, replace=True)
+    pool = Pool(processes=8)
+    #strains = choice(paths.keys(), size=12, replace=True)
+    strains = paths.keys()
     pool.map(run_workflow, strains)
     print "Finished."
